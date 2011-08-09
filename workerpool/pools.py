@@ -90,13 +90,14 @@ class WorkerPool(Queue):
         "(could be more if a shrinking is in progress)."
         return self._size
 
-    def map(self, fn, *seq):
-        "Perform a map operation distributed among the workers. Will "
-        "block until done."
+    def map(self, fn, *args, **kwargs):
+        """
+        Perform a map operation distributed among the workers. Will block until done.
+        If a `progress` kwarg is supplied, will use that to log progress.
+        """
         results = Queue()
-        args = zip(*seq)
-        for seq in args:
-            j = SimpleJob(results, fn, seq)
+        for w in args:
+            j = SimpleJob(results, fn, w)
             self.put(j)
 
         # Aggregate results
