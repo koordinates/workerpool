@@ -36,11 +36,15 @@ class SimpleJob(Job):
         self.method = method
         self.args = args
 
-    def run(self):
+    def run(self, toolbox=None):
         if isinstance(self.args, list) or isinstance(self.args, tuple):
-            r = self.method(*self.args)
+            a = toolbox and (list(self.args)+[toolbox]) or self.args
+            r = self.method(*a)
         elif isinstance(self.args, dict):
-            r = self.method(**self.args)
+            a = self.args.copy()
+            if toolbox:
+                a['toolbox'] = toolbox
+            r = self.method(**a)
         self._return(r)
 
     def _return(self, r):
